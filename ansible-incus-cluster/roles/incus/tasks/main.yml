@@ -1,0 +1,43 @@
+---
+- name: Install Incus prerequisites
+  apt:
+    name:
+      - curl
+      - gpg
+    state: present
+
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Zabbly GPG key
+  get_url:
+    url: https://pkgs.zabbly.com/key.asc
+    dest: /etc/apt/keyrings/zabbly.asc
+    mode: '0644'
+
+- name: Get system architecture
+  command: dpkg --print-architecture
+  register: dpkg_architecture
+  changed_when: false
+
+- name: Add Zabbly Incus repository
+  copy:
+    dest: /etc/apt/sources.list.d/zabbly-incus-stable.sources
+    content: |
+      Enabled: yes
+      Types: deb
+      URIs: https://pkgs.zabbly.com/incus/stable
+      Suites: {{ ansible_distribution_release }}
+      Components: main
+      Architectures: {{ dpkg_architecture.stdout }}
+      Signed-By: /etc/apt/keyrings/zabbly.asc
+    mode: '0644'
+
+- name: Install Incus
+  apt:
+    name: incus
+    state: present
+    update_cache: true

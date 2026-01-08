@@ -1,0 +1,9 @@
+---
+- name: Configure Homelab
+  hosts: all
+  become: true
+  roles:
+    # - networking # do this first and only once
+    - common
+    - zfs
+    - incus

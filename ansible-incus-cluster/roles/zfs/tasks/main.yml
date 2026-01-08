@@ -1,0 +1,29 @@
+---
+
+- name: Add trixie-backports repository
+  copy:
+    dest: /etc/apt/sources.list.d/trixie-backports.list
+    content: |
+      deb http://deb.debian.org/debian trixie-backports main contrib non-free-firmware
+      deb-src http://deb.debian.org/debian trixie-backports main contrib non-free-firmware
+    mode: '0644'
+
+- name: Configure apt preferences for ZFS
+  copy:
+    dest: /etc/apt/preferences.d/90_zfs
+    content: |
+      Package: src:zfs-linux
+      Pin: release n=trixie-backports
+      Pin-Priority: 990
+    mode: '0644'
+
+- name: Install kernel headers and ZFS
+  apt:
+    name:
+      - dpkg-dev
+      - linux-headers-generic
+      - linux-image-generic
+      - zfs-dkms
+      - zfsutils-linux
+    state: present
+    update_cache: true

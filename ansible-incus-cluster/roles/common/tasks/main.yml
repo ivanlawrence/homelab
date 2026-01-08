@@ -1,0 +1,29 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Update /etc/hosts with inventory hostnames
+  lineinfile:
+    path: /etc/hosts
+    regexp: "^{{ hostvars[item].static_ip }} {{ item }}$"
+    line: "{{ hostvars[item].static_ip }} {{ item }}"
+    state: present
+  loop: "{{ groups['homelab_nodes'] }}"
+
+- name: Install common packages
+  apt:
+    name:
+      - tmux
+      - neovim
+      - btop
+      - git
+      - curl
+      - wget
+      - net-tools
+      - sysstat
+      - zstd
+      - gpg
+    state: present
+    update_cache: yes

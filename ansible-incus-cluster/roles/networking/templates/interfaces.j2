@@ -1,0 +1,19 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+# We use the variable 'ansible_default_ipv4.interface' to grab the current interface name automatically
+auto {{ ansible_default_ipv4.interface }}
+iface {{ ansible_default_ipv4.interface }} inet static
+    address {{ static_ip }}
+    # Assuming a standard /24 subnet. You can make this a variable if needed.
+    netmask 255.255.255.0
+    gateway {{ gateway }}
+    # DNS servers (space separated)
+    dns-nameservers {{ dns_servers | join(' ') }}
